@@ -25,6 +25,7 @@ class UpdateUserRequest extends FormRequest
             'name' => 'sometimes|required|string|max:255',
             'email' => 'sometimes|required|string|email|max:255|unique:users,email,' . $this->user->id,
             'password' => 'sometimes|required|string|min:8',
+            'photos.*' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ];
     }
 }

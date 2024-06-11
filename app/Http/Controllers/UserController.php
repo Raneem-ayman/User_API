@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Http\Requests\TokenRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 
@@ -16,9 +16,7 @@ class UserController extends Controller
     {
         $this->middleware('auth:sanctum')->except(['store', 'index', 'token']);
     }
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index()
     {
         return response()->json([
@@ -44,9 +42,16 @@ class UserController extends Controller
         $validated['password'] = bcrypt($validated['password']);
         $user = User::create($validated);
 
+        if ($request->hasFile('photos')) {
+            foreach ($request->file('photos') as $photo) {
+                $path = $photo->store('photos', 'public');
+                $user->photos()->create(['path' => $path]);
+            }
+        }
+
         return response()->json([
             'message' => 'User created successfully',
-            'data' => new UserResource($user)
+            'data' => new UserResource($user->load('photos'))
         ], Response::HTTP_CREATED);
     }
 
@@ -57,7 +62,7 @@ class UserController extends Controller
     {
         return response()->json([
             'message' => 'User retrieved successfully',
-            'data' => new UserResource($user)
+            'data' => new UserResource($user->load('photos'))
         ], Response::HTTP_OK);
     }
     /**
@@ -81,9 +86,16 @@ class UserController extends Controller
 
         $user->update($validated);
 
+        if ($request->hasFile('photos')) {
+            foreach ($request->file('photos') as $photo) {
+                $path = $photo->store('photos', 'public');
+                $user->photos()->create(['path' => $path]);
+            }
+        }
+
         return response()->json([
             'message' => 'User updated successfully',
-            'data' => new UserResource($user)
+            'data' => new UserResource($user->load('photos'))
         ], Response::HTTP_OK);
     }
 
@@ -99,17 +111,13 @@ class UserController extends Controller
         ], Response::HTTP_OK);
     }
 
-    public function token(Request $request)
+    public function token(TokenRequest $request)
     {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-            'device_name' => 'required',
-        ]);
+        $validated = $request->validated();
 
-        $user = User::where('email', $request->email)->first();
+        $user = User::where('email', $validated['email'])->first();
 
-        if (! $user || ! Hash::check($request->password, $user->password)) {
+        if (! $user || ! Hash::check($validated['password'], $user->password)) {
             return response()->json(['message' => 'Invalid credentials'], 401);
         }
 

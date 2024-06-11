@@ -65,6 +65,53 @@ Endpoint Descriptions:
             HTTP Status: 200 OK
             Body: Token string.
 
+    7. GET /api/posts (Index)
+        -Description: Retrieve a list of all posts.
+        -Authentication: Public (No authentication required).
+        Response:
+            HTTP Status: 200 OK
+            Body: Array of post objects (ID, title, content).
+
+    8. POST /api/posts (Store)
+        -Description: Create a new post.
+        -Authentication: Requires authentication token.
+        -Request Body:
+            title (string, required): Post title.
+            content (string, required): Post content.
+        -Response:
+            HTTP Status: 201 Created
+            Body: Newly created post object (ID, title, content).
+
+    9. GET /api/posts/{post} (Show)
+        -Description: Retrieve details of a specific post.
+        -Authentication: Public (No authentication required).
+        -Path Parameter:
+            post (integer, required): ID of the post.
+        -Response:
+            HTTP Status: 200 OK
+            Body: Post object (ID, title, content).
+
+    10. PUT /api/posts/{post} (Update)
+        -Description: Update details of a specific post.
+        -Authentication: Requires authentication token.
+        -Path Parameter:
+            post (integer, required): ID of the post to update.
+        -Request Body:
+            title (string): Updated post title.
+            content (string): Updated post content.
+        -Response:
+            HTTP Status: 200 OK
+            Body: Updated post object (ID, title, content).
+
+    11. DELETE /api/posts/{post} (Destroy)
+        -Description: Delete a specific post.
+        -Authentication: Requires authentication token.
+        -Path Parameter:
+            post (integer, required): ID of the post to delete.
+        -Response:
+            HTTP Status: 200 OK
+            Body: Success message.
+
 Request/Response Formats:
     -Request and response bodies are in JSON format.
     -Requests include required fields for each endpoint.

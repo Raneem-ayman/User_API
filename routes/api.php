@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -21,6 +22,9 @@ Route::post('/sanctum/token', [UserController::class, 'token']);
 Route::get('/users', [UserController::class, 'index']);
 Route::post('/users/store', [UserController::class, 'store']);
 
+Route::get('/posts', [PostController::class, 'index']);
+Route::post('/posts/store', [PostController::class, 'store']);
+
 // Protected routes for user operations
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
@@ -29,4 +33,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/users/{user}', [UserController::class, 'show']);
     Route::put('/users/{user}', [UserController::class, 'update']);
     Route::delete('/users/{user}', [UserController::class, 'destroy']);
+
+    Route::get('/posts/{post}', [PostController::class, 'show']);
+    Route::put('/posts/{post}', [PostController::class, 'update']);
+    Route::delete('/posts/{post}', [PostController::class, 'destroy']);
 });
